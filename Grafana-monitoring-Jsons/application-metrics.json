@@ -1,0 +1,84 @@
+{
+    "title": "Application Monitoring",
+    "rows": [
+      {
+        "title": "Response Time",
+        "height": "250px",
+        "panels": [
+          {
+            "type": "graph",
+            "title": "Response Time",
+            "span": 12,
+            "datasource": "Prometheus",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, instance, job))",
+                "refId": "A"
+              }
+            ],
+            "yaxes": [
+              {
+                "format": "ms",
+                "label": "Response Time (ms)",
+                "min": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Request Rate",
+        "height": "250px",
+        "panels": [
+          {
+            "type": "graph",
+            "title": "Request Rate",
+            "span": 12,
+            "datasource": "Prometheus",
+            "targets": [
+              {
+                "expr": "sum(rate(http_requests_total[5m])) by (instance, job)",
+                "refId": "B"
+              }
+            ],
+            "yaxes": [
+              {
+                "format": "short",
+                "label": "Request Rate",
+                "min": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Error Rate",
+        "height": "250px",
+        "panels": [
+          {
+            "type": "graph",
+            "title": "Error Rate",
+            "span": 12,
+            "datasource": "Prometheus",
+            "targets": [
+              {
+                "expr": "sum(rate(http_request_errors_total[5m])) by (instance, job)",
+                "refId": "C"
+              }
+            ],
+            "yaxes": [
+              {
+                "format": "short",
+                "label": "Error Rate",
+                "min": 0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    }
+  }

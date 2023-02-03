@@ -1,0 +1,62 @@
+{
+    "title": "CPU & Memory Usage",
+    "rows": [
+      {
+        "title": "CPU Usage",
+        "height": "250px",
+        "panels": [
+          {
+            "type": "graph",
+            "title": "CPU Usage",
+            "span": 12,
+            "datasource": "Prometheus",
+            "targets": [
+              {
+                "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode='idle'}[5m])) * 100)",
+                "refId": "A"
+              }
+            ],
+            "yaxes": [
+              {
+                "format": "percentunit",
+                "label": "Percent",
+                "min": 0,
+                "max": 100
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Memory Usage",
+        "height": "250px",
+        "panels": [
+          {
+            "type": "graph",
+            "title": "Memory Usage",
+            "span": 12,
+            "datasource": "Prometheus",
+            "targets": [
+              {
+                "expr": "100 - (avg by (instance) (irate(node_memory_MemFree_bytes[5m])) / (avg by (instance) (node_memory_MemTotal_bytes[5m])) * 100)",
+                "refId": "B"
+              }
+            ],
+            "yaxes": [
+              {
+                "format": "percentunit",
+                "label": "Percent",
+                "min": 0,
+                "max": 100
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    }
+  }
+  
