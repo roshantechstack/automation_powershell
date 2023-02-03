@@ -1,0 +1,16 @@
+name: Unlock Terraform State
+
+on:
+ workflow_dispatch:
+
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Unlock Terraform State
+      run: terraform state unlock <statefile.tflock>
