@@ -1,0 +1,43 @@
+# In this workflow, Vault CLI is setup and the password for app1 is retrieved, rotated, and updated in the Vault. The new password is then updated on the server. Note that you need to replace secrets.VAULT_TOKEN with the actual token used to authenticate to Vault, secrets.SERVER_PASSWORD with the password used to authenticate to the server, and secrets.APP1_PASSWORD_FILE with the path to the password file on the server.
+
+
+
+name: Rotate Passwords in Vault
+
+on:
+ workflow_dispatch:
+  # schedule:
+  #   - cron:  '0 0 28 * *' # Run the workflow every 28th day of the month
+
+env:
+  VAULT_ADDR: https://vault.example.com
+  VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+
+jobs:
+  rotate_passwords:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Hashicorp Vault CLI
+      uses: hashicorp/setup-vault@v1
+      with:
+        vault_version: 1.5.0
+
+    - name: Rotate passwords in Vault
+      run: |
+        vault login -address=$VAULT_ADDR $VAULT_TOKEN
+        # Replace "secret/data/app1" with the path to your password in Vault
+        old_password=$(vault kv get -field=password secret/data/app1)
+        new_password=$(pwgen 16 1)
+        vault kv put secret/data/app1 password=$new_password
+        echo "Password for app1 changed from $old_password to $new_password"
+
+    - name: Update password on the server
+      uses: actions/ssh-action@v1
+      with:
+        host: myserver.example.com
+        username: myuser
+        password: ${{ secrets.SERVER_PASSWORD }}
+        script: |
+          # Replace "app1_password.txt" with the path to your password file on the server
+          echo "$new_password" > app1_password.txt
