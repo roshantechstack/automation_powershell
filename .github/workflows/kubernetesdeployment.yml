@@ -1,0 +1,38 @@
+# To deploy a Kubernetes application to a specific namespace using GitHub Actions, you can create a workflow that includes the following steps:
+
+# Check out the code from the repository.
+# Set up the necessary tools and dependencies, such as the Kubernetes CLI (kubectl).
+# Authenticate to the Kubernetes cluster using a service account or personal access token.
+# Create or update the necessary Kubernetes resources in the target namespace, such as pods, services, and deployments, using the kubectl command-line tool and a YAML file.
+# Here is an example workflow for deploying a Kubernetes application to a namespace using GitHub Actions:
+
+name: Kubernetes Deployment
+
+on:
+ workflow_dispatch:
+
+env:
+  KUBE_NAMESPACE: my-namespace
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v1
+      with:
+        kubectl-version: 1.19.0
+
+    - name: Authenticate to cluster
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to namespace
+      run: |
+        kubectl config set-context --current --namespace=$KUBE_NAMESPACE
+        kubectl apply -f k8s/
