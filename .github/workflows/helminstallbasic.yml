@@ -1,0 +1,50 @@
+# To deploy an application using Helm to a Kubernetes cluster using GitHub Actions, you can create a workflow that includes the following steps:
+
+# Check out the code from the repository.
+# Set up the necessary tools and dependencies, such as Helm and the Kubernetes CLI (kubectl).
+# Authenticate to the Kubernetes cluster using a service account or personal access token.
+# Install or upgrade the application using Helm and a Helm chart.
+# Here is an example workflow for deploying an application using Helm to a Kubernetes cluster using GitHub Actions:
+
+name: Helm Deployment
+
+on:
+ workflow_dispatch:
+
+env:
+  KUBECONFIG_CONTENT: ${{ secrets.KUBECONFIG }}
+  HELM_RELEASE_NAME: my-release
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Helm and kubectl
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.18.8
+        terraform_backend: false
+        helm_version: 3.4.0
+
+    - name: Authenticate to cluster
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy using Helm
+      run: |
+        echo "$KUBECONFIG_CONTENT" | base64 --decode > kubeconfig.yaml
+
+
+##############################################################################################################################
+
+# This workflow will run on every push to the repository and perform the following steps:
+
+# Check out the code from the repository.
+# Set up Helm version 3.4.0 and the Kubernetes CLI (kubectl).
+# Authenticate to the Kubernetes cluster using the Azure CLI and a stored service account or personal access token.
+# Upgrade or install the application defined in the charts/my-chart directory using Helm, with a release name specified in the HELM_RELEASE_NAME environment variable. The kubeconfig.yaml file containing the cluster configuration is decoded from a secret stored in the GitHub repository.
